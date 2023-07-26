@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+  # GoLang Backend
+  backend:
+    image: golang:latest
+    container_name: my_go_backend
+    ports:
+      - "8080:8080" # Expose the backend on port 8080
+    volumes:
+      - ./backend:/go/src/app
+    working_dir: /go/src/app
+    command: go run main.go # Replace 'main.go' with your GoLang application entry point
+    depends_on:
+      - database
+
+  # MySQL Database
+  database:
+    image: mysql:latest
+    container_name: my_mysql_db
+    ports:
+      - "3306:3306" # Expose MySQL on port 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: goreact
+      MYSQL_USER: goreactuser
+      MYSQL_PASSWORD: goreactpassword
+    volumes:
+      - mysql_data:/var/lib/mysql # Mount a volume to persist MySQL data
+
+  # PHPMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: my_phpmyadmin
+    ports:
+      - "8081:80" # Expose PHPMyAdmin on port 8081
+    environment:
+      PMA_HOST: database # Use the name of the MySQL container as the hostname
+      MYSQL_ROOT_PASSWORD: rootpassword # Same as the one used in the database container
+
+  # Next.js Frontend
+  frontend:
+    image: node:latest
+    container_name: my_nextjs_frontend
+    ports:
+      - "3000:3000" # Expose the frontend on port 3000
+    volumes:
+      - ./frontend:/app
+    working_dir: /app
+    command: npm run dev # Replace 'npm run dev' with your Next.js startup command
+    depends_on:
+      - backend
+
+# Define the MySQL data volume
+volumes:
+  mysql_data:

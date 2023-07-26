@@ -1,0 +1,20 @@
+{
+    "name": "my_project_frontend",
+    "version": "1.0.0",
+    "description": "Frontend for My Project",
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start"
+    },
+    "dependencies": {
+        "next": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+    },
+    "devDependencies": {
+        "@types/node": "20.4.2",
+        "@types/react": "18.2.15",
+        "typescript": "5.1.6"
+    }
+}

@@ -1,0 +1,76 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"math/rand"
+	"time"
+
+	"github.com/bxcodec/faker/v3"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+)
+
+// Product represents the structure of the products table in the database.
+type Product struct {
+	ID          int `gorm:"primaryKey"`
+	Name        string
+	Price       float64
+	Description string
+	Image       string
+	DeletedAt   *time.Time `gorm:"index"`
+}
+
+func main() {
+	// MySQL database configuration
+	dsn := "root:rootpassword@tcp(database:3306)/goreact?charset=utf8mb4&parseTime=True&loc=Local"
+
+	// Connect to the database
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+	sqlDB, _ := db.DB()
+	defer sqlDB.Close()
+
+	// Auto-migrate the table
+	db.AutoMigrate(&Product{})
+
+	// Insert 1000 random records
+	for i := 1; i <= 1000; i++ {
+		product := Product{
+			Name:        faker.Name(),
+			Price:       float64(rand.Intn(1000) + 10), // Random price between 10 and 1000
+			Description: faker.Paragraph(),
+			Image:       getRandomImageURL(),
+		}
+
+		if err := db.Create(&product).Error; err != nil {
+			log.Printf("Error inserting product %d: %v", i, err)
+		}
+	}
+
+	fmt.Println("Inserted 1000 random records successfully.")
+}
+
+// getRandomImageURL generates a random image URL from a list of image URLs.
+func getRandomImageURL() string {
+	imageURLs := []string{
+		"https://dealsheaven.in/images/uploaded/deals/thumb/61CDYHimncL._SL1000_.jpg",
+		"https://m.media-amazon.com/images/I/410E3Hr6FOL._SL160_.jpg",
+		"https://m.media-amazon.com/images/I/31xLFEZ1swL._SL160_.jpg",
+		"https://m.media-amazon.com/images/I/317OXnZi6eL._SL160_.jpg",
+		"https://m.media-amazon.com/images/I/41VSaTo0R0L.jpg",
+		"https://m.media-amazon.com/images/I/31lQ0jeKRwL._SL160_.jpg",
+		"https://m.media-amazon.com/images/I/411eN7CPkZL._SL160_.jpg",
+		"https://m.media-amazon.com/images/I/51eSK3m6djL._SL160_.jpg",
+		"https://rukminim1.flixcart.com/image/200/200/xif0q/mobile/8/f/8/c53-rmx3762-realme-original-imagrffga9srfh7v.jpeg?q=90",
+		"https://m.media-amazon.com/images/I/31IqTjL+RZL._SL160_.jpg",
+		"https://m.media-amazon.com/images/I/310svlmdj2L._SL160_.jpg",
+		"https://m.media-amazon.com/images/I/41LkOK8ISyL._SL160_.jpg",
+		// Add more valid image URLs here
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	return imageURLs[rand.Intn(len(imageURLs))]
+}
