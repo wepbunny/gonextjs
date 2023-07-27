@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"gonext/models"
 
@@ -14,7 +15,7 @@ import (
 func GetProductsHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var products []models.Product
-		db.Find(&products)
+		db.Limit(10).Find(&products)
 
 		json.NewEncoder(w).Encode(products)
 	}
@@ -32,5 +33,15 @@ func GetProductByIDHandler(db *gorm.DB) http.HandlerFunc {
 		}
 
 		json.NewEncoder(w).Encode(product)
+	}
+}
+
+// SearchProductsHandler fetches products from the database based on the search query
+func SearchProductsHandler(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query().Get("query")
+		var products []models.Product
+		db.Where("LOWER(name) LIKE ?", "%"+strings.ToLower(query)+"%").Limit(10).Find(&products)
+		json.NewEncoder(w).Encode(products)
 	}
 }

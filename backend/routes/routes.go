@@ -10,5 +10,6 @@ import (
 // RegisterRoutes registers API routes
 func RegisterRoutes(r chi.Router, db *gorm.DB) {
 	r.Get("/api/products", api.GetProductsHandler(db))
+	r.Get("/api/products/search", api.SearchProductsHandler(db))
 	r.Get("/api/products/{id}", api.GetProductByIDHandler(db))
 }
