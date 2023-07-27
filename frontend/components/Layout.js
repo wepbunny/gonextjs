@@ -8,7 +8,7 @@ import Footer from './Footer';
 const Layout = ({ products }) => {
   return (
     <div>
-      <Header />
+      <Header products={products} />
       <Navbar />
       <ImageSlider />
       <ProductList products={products} />
